@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import home from "../assets/home.png";
 import { APP_FEATURES } from "../utils/data";
 import { useNavigate } from "react-router-dom";
-import {LuSparkles} from "react-icons/lu"
+import { LuSparkles } from "react-icons/lu";
+import Footer from "./Footer";
+import Login from "./Auth/Login";
+import SignUp from "./Auth/SignUp";
+import Modal from "../components/Modal";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -33,7 +37,7 @@ const Landing = () => {
             <div className="w-full md:w-1/2 pr-4 mb-8 md:mb-0">
               <div className="flex flex-center justify-left mb-2">
                 <div className="flex items-center gap-2 text-[13px] text-amber-600 font-semibold bg-amber-100 px-3 py-1 rounded-full border border-amber-300">
-                 <LuSparkles/> AI Powered
+                  <LuSparkles /> AI Powered
                 </div>
               </div>
 
@@ -65,23 +69,72 @@ const Landing = () => {
         </div>
       </div>
 
-      <div className=" w-full min-h-full relative z-10 mb-56">
+      <div className=" w-full min-h-full relative z-10">
         <div>
           <section className="flex items-center justify-center -mt-36">
-            <img src={home} alt="home image"  className="w-[80vw] rounded-lg"/>
-
-
+            <img src={home} alt="home image" className="w-[80vw] rounded-lg" />
           </section>
         </div>
-<div className=" ">
-  <div className="">
-    <section className="">
-      <h2 className="">Fetures That Make tou Shine</h2>
 
-    </section>
-  </div>
-</div>
+        <div className="  w-full min-h-full bg-[#fffcef] mt-10 ">
+          <div className=" container mx-auto px-4 pt-10 pb-20">
+            <section className="mt-5">
+              <h2 className=" text-2xl font-medium text-center mb-12">Fetures That Make you Shine</h2>
+
+              <div className=" flex flex-col items-center gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                  {APP_FEATURES.slice(0, 3).map((feature) => (
+                    <div key={feature.id} className="bg-[#fffef8] p-6 rounded-xl shadow-xs hover:shadow-lg shadow-amber-100 transition border border-amber-100">
+                      <h3 className=" text-base font-semibold mb-3">{feature.title}</h3>
+                      <p className=" text-gray-600 text-justify">{feature.description}</p>
+                    </div>
+                  ))}
+                </div>
+
+
+                <div className=" grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {APP_FEATURES.slice(3).map((feature=>(
+                    <div key={feature.id} className=" bg-[#fffef8] p-6 rounded-xl shadow-xs hover:shadow-lg shadow-amber-100 transition border border-amber-100">
+
+                      <h3 className="text-base font-semibold mb-3">
+                        {feature.title}
+
+                      </h3>
+                      <p className="text-gray-600 text-justify">
+                        {feature.description}
+                      </p>
+
+                    </div>
+                  )))}
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div className="text-sm bg-gray-50 text-secondary text-center p-3 mt-5">
+          {/* Made With ❤️...Happy Coding */}
+          <Footer/>
+
+        </div>
       </div>
+
+      <Modal 
+      isOpen ={openAuthModel}
+      onClose={()=>{
+        setOpenAuthModel(false)
+        setCurrentPage("Login");
+      }}
+      hideHeader>
+        <div>
+          {currentPage === 'login' && (
+            <Login setCurrentPage={setCurrentPage}/>
+          )}
+          {currentPage === 'signup' &&(
+            <SignUp setCurrentPage={setCurrentPage}/>
+          )}
+        </div>
+      </Modal>
     </>
   );
 };
