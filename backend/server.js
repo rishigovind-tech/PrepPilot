@@ -4,6 +4,8 @@ const cors = require("cors");
 const path = require("path");
 const connectDB = require("./config/db");
 const authRoutes=require("./routes/authRoute")
+const sessionRoutes=require("./routes/sessionRoute")
+
 
 const app = express();
 
@@ -20,7 +22,7 @@ connectDB();
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
-// app.use("/api/session", sessionRoutes);
+app.use("/api/sessions", sessionRoutes);
 // app.use("/api/question", questionRoutes);
 
 // app.use("/api/ai/generate-questions", protect, generateInterviewQuestion);
