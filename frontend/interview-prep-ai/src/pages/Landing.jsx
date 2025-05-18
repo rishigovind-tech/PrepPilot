@@ -123,7 +123,7 @@ const Landing = () => {
       isOpen ={openAuthModel}
       onClose={()=>{
         setOpenAuthModel(false)
-        setCurrentPage("Login");
+        setCurrentPage("login");
       }}
       hideHeader>
         <div>

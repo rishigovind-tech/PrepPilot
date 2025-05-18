@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Inputs/Input";
+import { validateEmail } from "../../utils/helper";
 
 const Login = ({ setCurrentPage }) => {
   const [email, setEmail] = useState("");
@@ -11,7 +12,39 @@ const Login = ({ setCurrentPage }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if(!validateEmail(email)){
+      setError("please enter a vaild email address..")
+      return;
+    }
+
+    if(!password){
+      setError("please enter a vaild password")
+      return;
+    }
+
+    setError("");
+
+    //Login API call
+
+    try{
+
+    }catch{
+      if(error.response && error.response.data.message){
+        setError(error.response.data.message)
+      }else{
+        setError("Something went wrong.Please try again")
+      }
+    }
+
+    
+
+
   };
+
+
+
+
 
   return (
     <div className="w-[90vw] md:w-[33vw] p-7 flex flex-col justify-center">
@@ -22,11 +55,12 @@ const Login = ({ setCurrentPage }) => {
 
       <form onSubmit={handleLogin}>
         <Input
-         value={email}
+          value={email}
           onChange={({ target }) => setEmail(target.value)}
           label="Email Address"
           placeholder="arthurmorgan@example.com"
-          type="text"/>
+          type="text"
+        />
 
         <Input
           value={password}
@@ -37,13 +71,19 @@ const Login = ({ setCurrentPage }) => {
         />
 
         {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
-        <button type="submit " className="btn-primary">Login</button>
+        <button type="submit " className="btn-primary">
+          Login
+        </button>
 
-        <p className="text-[13px] text-slate-800">Don't Have an account?{""}
-          <button className=" font-medium text-primary  cursor-pointer" onClick={()=>{
-            setCurrentPage("signup");
-          }}>SignUp
-
+        <p className="text-[13px] text-slate-800">
+          Don't Have an account?{""}
+          <button
+            className=" font-medium text-primary  cursor-pointer"
+            onClick={() => {
+              setCurrentPage("signup");
+            }}
+          >
+            SignUp
           </button>
         </p>
       </form>
