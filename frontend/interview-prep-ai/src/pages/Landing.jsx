@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import home from "../assets/home.png";
 import { APP_FEATURES } from "../utils/data";
@@ -8,14 +8,23 @@ import Footer from "./Footer";
 import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
 import Modal from "../components/Modal";
+import { UserContext } from "../context/userContext";
+import ProfileInfoCard from "../components/Cards/ProfileInfoCard";
 
 const Landing = () => {
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [openAuthModel, setOpenAuthModel] = useState(false);
   const [currentPage, setCurrentPage] = useState("login");
 
-  const handleCTA = () => {};
+  const handleCTA = () => {
+    if (!user) {
+      setOpenAuthModel(true);
+    } else {
+      navigate("/dashboard");
+    }
+  };
 
   return (
     <>
@@ -25,12 +34,16 @@ const Landing = () => {
         <div className="container mx-auto px-4 pt-6 pb-[200px] relative z-10">
           <header className="flex justify-between items-center mb-16">
             <div className="text-2xl text-black font-bold">PrepPilot</div>
-            <button
-              className="bg-linear-to-r from-[#ff9324] to-[#e99a4b] text-sm font-semibold text-white px-7 py-2.5 rounded-full hover:bg-black hover:text-white border border-white transition-colors cursor-pointer "
-              onClick={() => setOpenAuthModel(true)}
-            >
-              Login / Sign Up
-            </button>
+            {user ? (
+              <ProfileInfoCard />
+            ) : (
+              <button
+                className="bg-linear-to-r from-[#ff9324] to-[#e99a4b] text-sm font-semibold text-white px-7 py-2.5 rounded-full hover:bg-black hover:text-white border border-white transition-colors cursor-pointer "
+                onClick={() => setOpenAuthModel(true)}
+              >
+                Login / Sign Up
+              </button>
+            )}
           </header>
 
           <div className="flex flex-col md:flex-row items-center">
@@ -79,33 +92,41 @@ const Landing = () => {
         <div className="  w-full min-h-full bg-[#fffcef] mt-10 ">
           <div className=" container mx-auto px-4 pt-10 pb-20">
             <section className="mt-5">
-              <h2 className=" text-2xl font-medium text-center mb-12">Fetures That Make you Shine</h2>
+              <h2 className=" text-2xl font-medium text-center mb-12">
+                Fetures That Make you Shine
+              </h2>
 
               <div className=" flex flex-col items-center gap-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
                   {APP_FEATURES.slice(0, 3).map((feature) => (
-                    <div key={feature.id} className="bg-[#fffef8] p-6 rounded-xl shadow-xs hover:shadow-lg shadow-amber-100 transition border border-amber-100">
-                      <h3 className=" text-base font-semibold mb-3">{feature.title}</h3>
-                      <p className=" text-gray-600 text-justify">{feature.description}</p>
+                    <div
+                      key={feature.id}
+                      className="bg-[#fffef8] p-6 rounded-xl shadow-xs hover:shadow-lg shadow-amber-100 transition border border-amber-100"
+                    >
+                      <h3 className=" text-base font-semibold mb-3">
+                        {feature.title}
+                      </h3>
+                      <p className=" text-gray-600 text-justify">
+                        {feature.description}
+                      </p>
                     </div>
                   ))}
                 </div>
 
-
                 <div className=" grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {APP_FEATURES.slice(3).map((feature=>(
-                    <div key={feature.id} className=" bg-[#fffef8] p-6 rounded-xl shadow-xs hover:shadow-lg shadow-amber-100 transition border border-amber-100">
-
+                  {APP_FEATURES.slice(3).map((feature) => (
+                    <div
+                      key={feature.id}
+                      className=" bg-[#fffef8] p-6 rounded-xl shadow-xs hover:shadow-lg shadow-amber-100 transition border border-amber-100"
+                    >
                       <h3 className="text-base font-semibold mb-3">
                         {feature.title}
-
                       </h3>
                       <p className="text-gray-600 text-justify">
                         {feature.description}
                       </p>
-
                     </div>
-                  )))}
+                  ))}
                 </div>
               </div>
             </section>
@@ -113,25 +134,22 @@ const Landing = () => {
         </div>
 
         <div className="text-sm bg-gray-50 text-secondary text-center p-3 mt-5">
-          {/* Made With ❤️...Happy Coding */}
-          <Footer/>
-
+          <Footer />
         </div>
       </div>
 
-      <Modal 
-      isOpen ={openAuthModel}
-      onClose={()=>{
-        setOpenAuthModel(false)
-        setCurrentPage("login");
-      }}
-      hideHeader>
+      <Modal
+        isOpen={openAuthModel}
+        onClose={() => {
+          setOpenAuthModel(false);
+          setCurrentPage("login");
+        }}
+        hideHeader
+      >
         <div>
-          {currentPage === 'login' && (
-            <Login setCurrentPage={setCurrentPage}/>
-          )}
-          {currentPage === 'signup' &&(
-            <SignUp setCurrentPage={setCurrentPage}/>
+          {currentPage === "login" && <Login setCurrentPage={setCurrentPage} />}
+          {currentPage === "signup" && (
+            <SignUp setCurrentPage={setCurrentPage} />
           )}
         </div>
       </Modal>

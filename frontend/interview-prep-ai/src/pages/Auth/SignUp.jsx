@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Inputs/Input";
 import ProfilePhotoSelector from "../../components/Inputs/ProfilePhotoSelector";
 import { validateEmail } from "../../utils/helper";
+import { UserContext } from "../../context/userContext";
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATHS } from "../../utils/apiPaths";
+import uploadImage from "../../utils/uploadImage";
+
+
 
 const SignUp = ({ setCurrentPage }) => {
   const [profilePic, setProfilePic] = useState(null);
@@ -12,39 +18,59 @@ const SignUp = ({ setCurrentPage }) => {
 
   const [error, setError] = useState(null);
 
+  const { updateUser } = useContext(UserContext);
+
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
 
-    let profileImageUrl="";
+    let profileImageUrl = "";
 
-    if(!fullName){
-      setError("Please enter full name")
+    if (!fullName) {
+      setError("Please enter full name");
       return;
     }
 
-    if(!validateEmail(email)){
-      setError("Please enter a vaild email address")
-    }
-
-    if(!password){
-      setError("please enter a vaild password")
+    if (!validateEmail(email)) {
+      setError("Please enter a vaild email address");
       return;
     }
 
+    if (!password) {
+      setError("please enter a vaild password");
+      return;
+    }
 
     setError("");
 
     //API call
 
-    try{
+    try {
+      if (profilePic) {
+        const imgUploadRes = await uploadImage(profilePic);
+        profileImageUrl = imgUploadRes.imageUrl || "";
+      }
 
-    }catch{
-      if(error.response && error.response.data.message){
-        setError(error.response.data.message)
-      }else{
-        setError("Something went wrong.Please try again")
+      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+        name: fullName,
+        email,
+        password,
+        profileImageUrl,
+      });
+
+      const {token}=response.data;
+
+      if(token){
+        localStorage.setItem("token",token);
+        updateUser(response.data);
+        navigate("/dashboard");
+      }
+    } catch(error) {
+      if (error.response && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong.Please try again");
       }
     }
   };
@@ -56,11 +82,7 @@ const SignUp = ({ setCurrentPage }) => {
         Join us today by entering your details below.
       </p>
       <form onSubmit={handleSignUp}>
-
-<ProfilePhotoSelector image={profilePic} setImage={setProfilePic}/>
-
-
-
+        <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
 
         <div className="grid grid-cols-1 md:grid-cols-1 gap-2">
           <Input

@@ -14,10 +14,10 @@ router.post("/upload-image",upload.single("image"),(req,res)=>{
         return res.status(400).json({message:"No file Uploaded"})
     }
 
-    const imageurl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
 
-    res.status(200).json({imageurl})
+    res.status(200).json({imageUrl})
 })
 
 module.exports=router;
