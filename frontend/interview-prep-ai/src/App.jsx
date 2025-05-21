@@ -15,7 +15,7 @@ const App = () => {
             <Route path="/" element={<Landing />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route
-              path="/interviewprep/:sessionId"
+              path="/interview-prep/:sessionId"
               element={<InterviewPrep />}
             />
           </Routes>
