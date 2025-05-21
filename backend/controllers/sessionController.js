@@ -36,9 +36,15 @@ exports.createSession = async (req, res) => {
 
 exports.getMySession = async (req, res) => {
   try {
-    const session = await Session.find({ user: req.user.id })
+
+
+    console.log( req.user._id);
+
+    const session = await Session.find({ user:  req.user._id})
       .sort({ createdAt: -1 })
       .populate("questions");
+
+      console.log(session);
     res.status(200).json(session);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
