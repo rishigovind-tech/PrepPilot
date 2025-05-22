@@ -85,7 +85,7 @@ const Landing = () => {
       <div className=" w-full min-h-full relative z-10">
         <div>
           <section className="flex items-center justify-center -mt-36">
-            <img src={home} alt="home image" className="w-[80vw] rounded-lg" />
+            <img src={home} alt="home image" className="w-[80vw] rounded-lg border border-black" />
           </section>
         </div>
 

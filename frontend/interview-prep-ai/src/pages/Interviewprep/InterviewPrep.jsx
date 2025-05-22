@@ -10,6 +10,9 @@ import RoleInfoHeader from "./components/RoleInfoHeader";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import QuestionCard from "../../components/Cards/QuestionCard";
+import AIResponsePreview from "./components/AIResponsePreview";
+import Drawer from "../../components/Loader/Drawer";
+import SkeletonLoader from "../../components/Loader/SkeletonLoader";
 
 const InterviewPrep = () => {
   const { sessionId } = useParams();
@@ -37,26 +40,83 @@ const InterviewPrep = () => {
     }
   };
 
-  const generateConceptExplanation = async (question) => {};
-
-  const toggleQuestionPinStatus = async (questionId) => {
+  const generateConceptExplanation = async (question) => {
     try {
+      setErrorMsg("");
+      setExplanation(null);
 
-      const response=await axiosInstance.post(API_PATHS.QUESTION.PIN(questionId));
+      setIsLoading(true);
+      setOpenLeanMoreDrawer(true);
 
-      console.log(response);
-
-      if(response.data && response.data.question){
-        toast.success('Question Pinned Successfully')
-        fetchSessionDetailsById();
+      const response = await axiosInstance.post(
+        API_PATHS.AI.GENERATE_EXPLANATION,
+        { question }
+      );
+      if (response.data) {
+        setExplanation(response.data);
       }
-      
     } catch (error) {
-      console.log("Error:",error);
+      setExplanation(null);
+      setErrorMsg("Failed to generate explaination,Try again later");
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const uploadMoreQuestion = async () => {};
+  const toggleQuestionPinStatus = async (questionId) => {
+    try {
+      const response = await axiosInstance.post(
+        API_PATHS.QUESTION.PIN(questionId)
+      );
+
+      console.log(response);
+
+      if (response.data && response.data.question) {
+        toast.success("Question Pinned Successfully");
+        fetchSessionDetailsById();
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const uploadMoreQuestions = async () => {
+    try {
+      setIsUpdateLoader(true);
+
+      const aiResponse = await axiosInstance.post(
+        API_PATHS.AI.GENERATE_QUESTIONS,
+        {
+          role: sessionData?.role,
+          experience: sessionData?.experience,
+          topicToFocus: sessionData?.topicToFocus,
+          numberOfQuestions:10,
+        }
+      );
+
+      const generatedQuestions=aiResponse.data;
+
+      const response = await axiosInstance.post(API_PATHS.QUESTION.ADD_TO_SESSION,{
+        sessionId,
+        questions:generatedQuestions,
+      })
+
+      if(response.data){
+        toast.success("Added More Q&A")
+        fetchSessionDetailsById();
+      }
+
+    } catch (error) {
+      if(error.response && error.response.data.message){
+        setErrorMsg(error.response.data.message);
+      }else{
+        setErrorMsg("Something went wrong.Please try again")
+      }
+    }finally{
+      setIsUpdateLoader(false)
+    }
+  };
 
   useEffect(() => {
     if (sessionId) {
@@ -116,12 +176,48 @@ const InterviewPrep = () => {
                         isPinned={data?.isPinned}
                         onTogglePin={() => toggleQuestionPinStatus(data._id)}
                       />
+                      {!isLoading &&
+                        sessionData?.questions?.length == index + 1 && (
+                          <div className="flex items-center justify-center mt-5">
+                            <button
+                              className="flex items-center gap-3 text-sm text-white font-medium bg-black px-5 py-2 mr-2 rounded-2xl text-nowrap cursor-pointer"
+                              disabled={isLoading || isUpdateLoader}
+                              onClick={uploadMoreQuestions}
+                            >
+                              {isUpdateLoader ? (
+                                <SpinnerLoader />
+                              ) : (
+                                <LuListCollapse className="text-lg " />
+                              )}{" "}
+                              Load More
+                            </button>
+                          </div>
+                        )}{" "}
                     </>
                   </motion.div>
                 );
               })}
             </AnimatePresence>
           </div>
+        </div>
+
+        <div>
+          <Drawer
+            isOpen={openLeanMoreDrawer}
+            onClose={() => setOpenLeanMoreDrawer(false)}
+            title={!isLoading && explanation?.title}
+          >
+            {errorMsg && (
+              <p className="flex gap-2 text-sm text-amber-600 font-medium">
+                <LuCircleAlert className=" mt-1" />
+                {errorMsg}
+              </p>
+            )}
+            {isLoading && <SkeletonLoader />}
+            {!isLoading && explanation && (
+              <AIResponsePreview content={explanation?.explanation} />
+            )}
+          </Drawer>
         </div>
       </div>
     </DashboardLayout>
