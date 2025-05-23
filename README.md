@@ -32,4 +32,8 @@
 - Node.js (v14 or higher)  
 - MongoDB (local or Atlas)  
 - Cloudinary account (for image hosting)  
-- Gemini AI API key  
+- Gemini AI API key
+
+## Screenshot
+
+![Interview Question Screen](frontend/interview-prep-ai/src/assets/home.png)
