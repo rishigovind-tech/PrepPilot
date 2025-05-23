@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname,"../frontend/interview-prep-ai/dist")
 
 
 app.get("*",(req,res)=>{
-  res.sendFile(path.join(__dirname,"../frontend/interview-prep-ai/dist"))
+  res.sendFile(path.join(__dirname,"../frontend/interview-prep-ai/dist/index.html"))
 })
 
 
