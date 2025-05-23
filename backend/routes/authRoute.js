@@ -21,11 +21,9 @@ router.post("/upload-image", upload.single("image"), async (req, res) => {
 
   const imageUrl = await cloudinary.uploader.upload(req.file.path);
 
-//   const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
-//     req.file.filename
-//   }`;
+console.log(imageUrl);
 
-  res.status(200).json({ imageUrl });
+  res.status(200).json({ imageUrl: imageUrl.secure_url });
 });
 
 module.exports = router;
