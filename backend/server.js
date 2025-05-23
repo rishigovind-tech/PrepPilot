@@ -31,7 +31,15 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/ai/generate-questions", protect, generateInterviewQuestion);
 app.use("/api/ai/generate-explaination", protect, generateConceptExplaination);
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads"), {}));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use(express.static(path.join(__dirname,"../frontend/interview-prep-ai/dist")))
+
+
+app.get("*",(req,res)=>{
+  res.sendFile(path.join(__dirname,"../frontend/interview-prep-ai/dist"))
+})
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));
